@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function add7(num) {
+            let result = num + 7;
+
+            console.log(result)
+        }
+
+        function multiply(a, b) {
+            let result = a * b;
+
+            console.log(result)
+        }
+
+        function capitalize(string) {
+            let downcasedString = string.toLowerCase();
+            let upcasedFirstChar = firstLetter(string).toUpperCase();
+            let result = upcasedFirstChar + downcasedString.slice(1);
+
+            console.log(result)
+        }
+
+        function lastLetter(string) {
+            let length = string.length;
+            let result = string.charAt(length - 1);
+
+            console.log(result)
+        }
+
+        let firstLetter = (string) => {
+            let result = string.charAt(0);
+            console.log(`First letter = ${result}`);
+
+            return result;
+        }
+    </script>
+</body>
+</html>

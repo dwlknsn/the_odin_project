@@ -1,0 +1,21 @@
+#grid {
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  width: 500px;
+}
+
+.row {
+  display: flex;
+  flex: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.square {
+  background-color: white;
+  border: 1px solid rgb(240, 240, 240);
+  height: 100%;
+  width: 100%;
+}
