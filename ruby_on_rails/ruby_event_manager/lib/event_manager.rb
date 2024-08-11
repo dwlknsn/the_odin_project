@@ -21,6 +21,16 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, "0")[0..4]
 end
 
+def save_thankyou_letter(id, form_letter)
+  Dir.mkdir("output") unless Dir.exist?("output")
+
+  filename = "output/thanks_#{id}.html"
+
+  File.open(filename, "w") do |file|
+    file.puts(form_letter)
+  end
+end
+
 contents = CSV.open(
   "event_attendees.csv",
   headers: true,
@@ -38,10 +48,5 @@ contents.each do |row|
 
   form_letter = erb_template.result(binding)
 
-  Dir.mkdir("output") unless Dir.exist?("output")
-
-  filename = "output/thanks_#{id}.html"
-  File.open(filename, "w") do |file|
-    file.puts(form_letter)
-  end
+  save_thankyou_letter(id, form_letter)
 end
