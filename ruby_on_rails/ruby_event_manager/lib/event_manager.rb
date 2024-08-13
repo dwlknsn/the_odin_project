@@ -57,6 +57,7 @@ contents = CSV.open(
 
 template_letter = File.read("form_letter.erb")
 erb_template = ERB.new(template_letter)
+weekdays = Hash.new(0)
 
 contents.each do |row|
   id = row[0]
@@ -64,11 +65,17 @@ contents.each do |row|
   zipcode = clean_zipcode(row[:zipcode])
   phone_number = clean_phone_number(row[:homephone])
   registration_time = clean_registration_time(row[:regdate])
+
+  weekdays[registration_time.split(" ")[0]] += 1
+
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
 
   puts "#{name.ljust(10)} | #{zipcode} | #{phone_number} | #{registration_time}"
 
+
   # save_thankyou_letter(id, form_letter)
 end
+
+puts weekdays
