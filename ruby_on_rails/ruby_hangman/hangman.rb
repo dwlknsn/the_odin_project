@@ -1,37 +1,60 @@
+require "json"
+
 class Hangman
   attr_reader :secret_word, :letters
   attr_accessor :guesses, :remaining_guesses
 
-  def initialize(dictionary = "google-10000-english-no-swears.txt")
-    words = File.readlines(dictionary).select! { |word| (6..13).cover?(word.length) }
-    @secret_word = words.shuffle.pop.upcase.chomp
-    @letters = secret_word.chars
+  class << self
+    def call
+      puts "Start a new game (1) or load the previously saved game (2)"
 
-    @guesses = []
-    @remaining_guesses = 5
+      case gets.chomp.to_i
+      when 1 then from_dictionary.call
+      when 2 then from_json.call
+      else
+        puts "Unrecognised input"
+        call
+      end
+    end
+
+    def from_dictionary
+      dictionary = "google-10000-english-no-swears.txt"
+      words = File.readlines(dictionary).select! { |word| (6..13).cover?(word.length) }
+
+      new(
+        secret_word: words.shuffle.pop.upcase.chomp
+      )
+    end
+
+    def from_json
+      filename = "saved_games/last_game.json"
+      data = JSON.parse(File.read(filename))
+
+      new(
+        secret_word: data["secret_word"],
+        guesses: data["guesses"],
+        remaining_guesses: data["remaining_guesses"]
+      )
+    end
+  end
+
+  def initialize(secret_word:, guesses: [], remaining_guesses: 5)
+    @secret_word = secret_word
+    @letters = secret_word.chars
+    @guesses = guesses
+    @remaining_guesses = remaining_guesses
 
     puts "Hangman initialised"
   end
 
   def call
     until solved? || failed?
-      puts "Remaining guesses: #{remaining_guesses}"
-      puts "Letters Used: #{guesses.sort.uniq.join(" ")}"
+      show_current_game_state
 
-      puts "Guess a letter"
-      guess = gets.chomp.upcase
-      guesses << guess if valid_guess?(guess)
-
-      @remaining_guesses -= 1 unless letters.include?(guess)
-
-      puts letters.map { |letter| guesses.include?(letter) ? letter : "_" }.join(" ")
+      collect_user_input
     end
 
-    if solved?
-      puts "You Win!"
-    else
-      puts "You Lose! The word was #{secret_word}"
-    end
+    puts "You #{solved? ? "Win!" : "Lose!"} The word was #{secret_word}"
   end
 
   private
@@ -44,9 +67,47 @@ class Hangman
     remaining_guesses.zero?
   end
 
+  def show_current_game_state
+    puts letters.map { |letter| guesses.include?(letter) ? letter : "_" }.join(" ")
+    puts "Letters Used: #{guesses.sort.uniq.join(" ")}"
+    puts "Remaining guesses: #{remaining_guesses}"
+  end
+
+  def collect_user_input
+    puts "Guess a letter or type SAVE to save and exit"
+    user_input = gets.chomp.upcase
+
+    if user_input == "SAVE"
+      save_current_game
+      exit
+    else
+      guesses << user_input if valid_guess?(user_input)
+    end
+
+    @remaining_guesses -= 1 unless letters.include?(user_input)
+    puts
+  end
+
   def valid_guess?(letter)
     ("A".."Z").cover?(letter)
   end
+
+  def save_current_game
+    Dir.mkdir("saved_games") unless Dir.exist?("saved_games")
+    filename = "saved_games/last_game.json"
+
+    File.open(filename, "w") do |file|
+      file.puts(self.to_json)
+    end
+  end
+
+  def to_json
+    JSON.dump ({
+      secret_word: @secret_word,
+      guesses: @guesses,
+      remaining_guesses: @remaining_guesses,
+    })
+  end
 end
 
-Hangman.new.call
+Hangman.call
