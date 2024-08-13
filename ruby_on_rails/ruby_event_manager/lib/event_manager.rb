@@ -35,6 +35,10 @@ def clean_phone_number(phone_number)
   end
 end
 
+def clean_registration_time(datetime)
+  Time.strptime(datetime, "%m/%d/%Y %R").strftime("%A - %d of %B, %y - %R")
+end
+
 def save_thankyou_letter(id, form_letter)
   Dir.mkdir("output") unless Dir.exist?("output")
 
@@ -59,11 +63,12 @@ contents.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   phone_number = clean_phone_number(row[:homephone])
+  registration_time = clean_registration_time(row[:regdate])
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
 
-  puts "#{name.ljust(10)} - #{zipcode} | #{phone_number}"
+  puts "#{name.ljust(10)} | #{zipcode} | #{phone_number} | #{registration_time}"
 
-  save_thankyou_letter(id, form_letter)
+  # save_thankyou_letter(id, form_letter)
 end
