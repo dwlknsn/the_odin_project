@@ -1,33 +1,52 @@
-puts "Hangman initialised"
+class Hangman
+  attr_reader :secret_word, :letters
+  attr_accessor :guesses, :remaining_guesses
 
-dictionary = File.readlines("google-10000-english-no-swears.txt")
+  def initialize(dictionary = "google-10000-english-no-swears.txt")
+    words = File.readlines(dictionary).select! { |word| (6..13).cover?(word.length) }
+    @secret_word = words.shuffle.pop.upcase.chomp
+    @letters = secret_word.chars
 
-dictionary.select! { |word| (5..12).cover?(word.length) }
+    @guesses = []
+    @remaining_guesses = 5
 
-secret_word = dictionary.shuffle.pop.upcase.chomp
-letters = secret_word.chars
+    puts "Hangman initialised"
+  end
 
-guesses = []
-remaining_guesses = 5
+  def call
+    until solved? || failed?
+      puts "Remaining guesses: #{remaining_guesses}"
+      puts "Letters Used: #{guesses.sort.uniq.join(" ")}"
 
-until (letters.uniq.sort - guesses.uniq.sort).empty?
-  puts "Remaining guesses: #{remaining_guesses}"
-  break if remaining_guesses.zero?
+      puts "Guess a letter"
+      guess = gets.chomp.upcase
+      guesses << guess if valid_guess?(guess)
 
-  puts "Guess a letter"
-  guess = gets.chomp.upcase
-  guesses << guess if ("A".."Z").cover?(guess)
+      @remaining_guesses -= 1 unless letters.include?(guess)
 
-  remaining_guesses -= 1 unless letters.include?(guess)
+      puts letters.map { |letter| guesses.include?(letter) ? letter : "_" }.join(" ")
+    end
 
-  letters.each { |letter| print guesses.include?(letter) ? " #{letter} " : " _ " }
-  puts
-  print "Letters Used: #{guesses.sort.uniq { |guess| " #{guess} " }}"
-  puts
+    if solved?
+      puts "You Win!"
+    else
+      puts "You Lose! The word was #{secret_word}"
+    end
+  end
+
+  private
+
+  def solved?
+    (letters.uniq.sort - guesses.uniq.sort).empty?
+  end
+
+  def failed?
+    remaining_guesses.zero?
+  end
+
+  def valid_guess?(letter)
+    ("A".."Z").cover?(letter)
+  end
 end
 
-if remaining_guesses.zero?
-  puts "You Lose! The word was #{secret_word}"
-else
-  puts "You Win!"
-end
+Hangman.new.call
