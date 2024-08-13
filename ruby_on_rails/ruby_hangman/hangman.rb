@@ -80,8 +80,8 @@ class Hangman
     if user_input == "SAVE"
       save_current_game
       exit
-    else
-      guesses << user_input if valid_guess?(user_input)
+    elsif valid_guess?(user_input)
+      guesses << user_input
     end
 
     @remaining_guesses -= 1 unless letters.include?(user_input)
@@ -97,16 +97,18 @@ class Hangman
     filename = "saved_games/last_game.json"
 
     File.open(filename, "w") do |file|
-      file.puts(self.to_json)
+      file.puts(to_json)
     end
   end
 
   def to_json
-    JSON.dump ({
-      secret_word: @secret_word,
-      guesses: @guesses,
-      remaining_guesses: @remaining_guesses,
-    })
+    JSON.dump(
+      {
+        secret_word: @secret_word,
+        guesses: @guesses,
+        remaining_guesses: @remaining_guesses
+      }
+    )
   end
 end
 
