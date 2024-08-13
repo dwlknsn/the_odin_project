@@ -21,6 +21,20 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, "0")[0..4]
 end
 
+def clean_phone_number(phone_number)
+  fallback_number = "0000000000"
+
+  phone_number.gsub!(/\D/, "")
+
+  if phone_number.length == 10
+    phone_number
+  elsif phone_number.length == 11 && phone_number[0] == "1"
+    phone_number[1..10]
+  else
+    fallback_number
+  end
+end
+
 def save_thankyou_letter(id, form_letter)
   Dir.mkdir("output") unless Dir.exist?("output")
 
@@ -44,9 +58,12 @@ contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
+  phone_number = clean_phone_number(row[:homephone])
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
+
+  puts "#{name.ljust(10)} - #{zipcode} | #{phone_number}"
 
   save_thankyou_letter(id, form_letter)
 end
