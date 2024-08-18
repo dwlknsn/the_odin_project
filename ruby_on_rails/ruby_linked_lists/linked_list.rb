@@ -3,16 +3,6 @@ require_relative "node"
 class LinkedList
   attr_accessor :head
 
-  def append(value)
-    new_node = Node.new(value: value)
-
-    if head.nil?
-      @head = new_node
-    else
-      tail.next_node = new_node
-    end
-  end
-
   def tail
     current_node = head
 
@@ -21,6 +11,16 @@ class LinkedList
     end
 
     current_node
+  end
+
+  def append(value)
+    new_node = Node.new(value: value)
+
+    if head.nil?
+      @head = new_node
+    else
+      tail.next_node = new_node
+    end
   end
 
   def prepend(value)
@@ -103,5 +103,40 @@ class LinkedList
     end
 
     output + "nil"
+  end
+
+  def insert_at(value, target_index)
+    current_node = head
+    index = 0
+
+    until index == target_index
+      return "Invalid target index" if current_node.next_node.nil?
+
+      index += 1
+      prev_node = current_node
+      current_node = current_node.next_node
+    end
+
+    prev_node.next_node = Node.new(value: value, next_node: current_node)
+  end
+
+  def remove_at(target_index)
+    if target_index == 0
+      @head = head.next_node
+      return
+    end
+
+    current_node = head
+    index = 0
+
+    until index == target_index
+      return "Invalid target index" if current_node.next_node.nil?
+
+      index += 1
+      prev_node = current_node
+      current_node = current_node.next_node
+    end
+
+    prev_node.next_node = current_node.next_node
   end
 end
