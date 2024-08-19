@@ -4,6 +4,8 @@ class LinkedList
   attr_accessor :head
 
   def tail
+    return if head.nil?
+
     current_node = head
 
     until current_node.next_node.nil?
@@ -46,6 +48,8 @@ class LinkedList
     current_node = head
 
     index.times do
+      return nil if current_node.nil? # End of list reached before Node at target index found
+
       current_node = current_node.next_node
     end
 
@@ -53,7 +57,7 @@ class LinkedList
   end
 
   def pop
-    return "EMPTY LIST" if head.nil?
+    return if head.nil?
 
     if head.next_node.nil?
       @head = nil
@@ -94,6 +98,8 @@ class LinkedList
   end
 
   def to_s
+    return if head.nil?
+
     output = ""
     current_node = head
 
@@ -106,11 +112,18 @@ class LinkedList
   end
 
   def insert_at(value, target_index)
+    if head.nil?
+      if target_index.zero?
+        @head = Node.new(value: value)
+      end
+      return
+    end
+
     current_node = head
     index = 0
 
     until index == target_index
-      return "Invalid target index" if current_node.next_node.nil?
+      return if current_node.next_node.nil?
 
       index += 1
       prev_node = current_node
@@ -121,6 +134,8 @@ class LinkedList
   end
 
   def remove_at(target_index)
+    return if head.nil?
+
     if target_index == 0
       @head = head.next_node
       return
