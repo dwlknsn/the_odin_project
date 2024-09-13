@@ -17,6 +17,3 @@ game.solve
 
 game = Game.new(15, [0, 0], [14, 14])
 game.solve
-
-game = Game.new(15, [0, 0], [14, 14])
-game.solve

@@ -37,6 +37,20 @@ class LinkedList
     false
   end
 
+  def size
+    return 0 if head.nil?
+
+    counter = 1
+    current_node = head
+
+    until current_node.next_node.nil?
+      counter += 1
+      current_node = current_node.next_node
+    end
+
+    counter
+  end
+
   def duplicate
     return if head.nil?
 

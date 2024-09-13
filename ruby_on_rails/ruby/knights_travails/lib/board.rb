@@ -37,7 +37,7 @@ class Board
       current_node = current_path.tail
 
       MOVES.each do |move|
-        print "."
+        # print "." # progress indicator
         x = current_node.x + move[0]
         y = current_node.y + move[1]
 
@@ -67,7 +67,7 @@ class Board
       # columns
       Array.new(@size) do
         # placeholder value
-        "-"
+        " "
       end
     end
   end
@@ -78,8 +78,8 @@ class Board
 
   def visited?(path, position)
     # path.contains?(position)
-
-    @board[position[0]][position[1]] == "."
+    @start == position ||
+      @board[position[0]][position[1]] == "."
   end
 
   def mark_as_visited(position)
@@ -88,19 +88,20 @@ class Board
 
   def display_board
     rows = @board.map { |row| row.map { |x| " " + x.to_s + " " }.join("|") }
-    separator_rows = Array.new(@size){ ("|---" * @size)[1..] }
+    separator_rows = Array.new(@size) { ("|---" * @size)[1..] }
     puts
     puts rows.zip(separator_rows[1..]).compact.join("\n")
     puts
   end
 
   def display_shortest_route(path)
-    puts "\nShortest path: #{path}"
+    puts "Solved in #{path.size - 1} moves!"
+    puts "Shortest path: #{path}"
 
-    current_node = path.head
+    current_node = path.head.next_node
     i = 1
 
-    until current_node.nil?
+    until current_node.next_node.nil?
       x, y = current_node.position
       @board[x][y] = i
       current_node = current_node.next_node
