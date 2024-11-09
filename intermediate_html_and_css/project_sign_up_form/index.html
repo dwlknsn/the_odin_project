@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" href="./stylesheets/reset.css">
+  <link rel="stylesheet" href="./stylesheets/style.css">
+  <script src="main.js" defer></script>
+</head>
+
+<body>
+  <div class="row container">
+    <div class="column left">
+      <div class="row top-half">
+        <div class="row logo-container">
+          <img src="./assets/odin-lined.png" alt="logo">
+          <h1>Odin</h1>
+        </div>
+
+      </div>
+      <div class="row bottom-half">
+        <div class="image-credit">
+
+          Photo by <a href="https://unsplash.com/@lifeofteej?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Thomas Charters</a> on <a href="https://unsplash.com/photos/red-and-blue-light-reflection-on-water-qmHMSN7sDeI?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="column right">
+      <div class="row description">
+        <h3>
+          This is not a real online service! You know you need something like this in your life to help you realize your deepest dreams. Sign up now to get started.
+
+        </h3>
+        <h3>You <em>know</em> you want to.</h3>
+      </div>
+
+      <div class="row form-section">
+        <form id="registration-form" class="column" action="post">
+          <div class="row form-title">
+            <h2>Let's do this!</h2>
+          </div>
+
+          <div class="row inputs">
+            <div class="input-group">
+              <label for="first-name">First Name</label>
+              <input type="text" name="first-name" id="first-name" placeholder="John" required>
+            </div>
+
+            <div class="input-group">
+              <label for="last-name">Last Name</label>
+              <input type="text" name="last-name" id="last-name" placeholder="Smith" required>
+            </div>
+
+            <div class="input-group">
+              <label for="email">Email</label>
+              <input type="email" name="email" id="email" placeholder="johnsmith@example.com" autocomplete="email" required>
+            </div>
+
+            <div class="input-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" name="phone" id="phone" placeholder="123-456-7890" required>
+            </div>
+
+            <div class="input-group">
+              <label for="password">Password</label>
+              <input type="password" name="password" id="password" minlength="8" placeholder="S3cr3tPa$5w0rd" autocomplete="new-password" required>
+            </div>
+
+            <div class="input-group">
+              <label for="password-confirmation">Confirm Password</label>
+              <input type="password" name="password-confirmation" id="password-confirmation" required autocomplete="new-password" placeholder="S3cr3tPa$5w0rd">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="row button-container">
+        <button type="submit" form="registration-form" id="create-account-btn">Create Account</button>
+      </div>
+
+      <div class="row log-in">
+        <p>Already have an account? <a href="#">Log in</a></p>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
