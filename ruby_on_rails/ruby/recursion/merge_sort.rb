@@ -17,30 +17,36 @@ end
 def merge(left_arr, right_arr)
   sorted_arr = []
 
-  left_arr.each do |l|
-    right_arr.each_with_index do |r, j|
-      next if r.nil?
+  left_arr.each do |left|
+    right_arr.each_with_index do |right, i|
+      next if right.nil?
+      break if right > left
 
-      if r <= l
-        sorted_arr << r
-        right_arr[j] = nil
-      else
-        break
-      end
+      sorted_arr << right
+      right_arr[i] = nil
     end
-    sorted_arr << l
+    sorted_arr << left
   end
 
   # merge any remaining elements from the right array
+  # and remove any nil values
   sorted_arr.concat(right_arr).compact
 end
 
 ### TEST ###
-3.times do
-  array = Array.new(20) { Random.rand(100) }
+5.times do
+  array = Array.new(10) { Random.rand(100) }
 
   result = merge_sort(array)
   expected = array.sort
 
-  puts (result == expected) ? "Test PASSED" : "Test FAILED"
+  output = <<~RESULT
+    Input:    #{array}
+    Expected: #{expected}
+    Result:   #{result}
+    #{(result == expected) ? "Test PASSED" : "Test FAILED"}
+
+  RESULT
+
+  print output
 end
