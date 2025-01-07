@@ -11,30 +11,39 @@ const myBoard = (function createGameboard() {
     }
   }
 
-  const getBoard = () => board;
-  const placeToken = (token, [x, y]) => { board[x][y] = token; }
-  const winner = (token) => {
-    const winningCombos = [
-      // winning rows:
-      [[0, 0], [1, 0], [2, 0]],
-      [[0, 1], [1, 1], [2, 1]],
-      [[0, 2], [1, 2], [2, 2]],
-      // winning cols:
-      [[0, 0], [0, 1], [0, 2]],
-      [[1, 0], [1, 1], [1, 2]],
-      [[2, 0], [2, 1], [2, 2]],
-      // winning diagonals
-      [[0, 0], [1, 1], [2, 2]],
-      [[0, 2], [1, 1], [2, 0]]
-    ]
+  const winningCombos = [
+    // winning rows:
+    [[0, 0], [1, 0], [2, 0]],
+    [[0, 1], [1, 1], [2, 1]],
+    [[0, 2], [1, 2], [2, 2]],
+    // winning cols:
+    [[0, 0], [0, 1], [0, 2]],
+    [[1, 0], [1, 1], [1, 2]],
+    [[2, 0], [2, 1], [2, 2]],
+    // winning diagonals
+    [[0, 0], [1, 1], [2, 2]],
+    [[0, 2], [1, 1], [2, 0]]
+  ]
 
+  const getBoard = () => board;
+  const positionAvailable = ([x, y]) => {
+    const validRow = x >= 0 && x <= rows;
+    const validCol = y >= 0 && y <= cols;
+
+    if (validRow && validCol) {
+      return getBoard()[x][y] === null;
+    }
+    return false
+  }
+  const placeToken = (token, [x, y]) => { getBoard()[x][y] = token; }
+  const winner = (token) => {
     return winningCombos.some((arr) => {
-      return arr.map(([x, y]) => { return board[x][y] == token; })
+      return arr.map(([x, y]) => { return getBoard()[x][y] == token; })
                 .every(bool => bool);
     })
   }
 
-  return { getBoard, placeToken, winner }
+  return { getBoard, positionAvailable, placeToken, winner }
 })();
 
 function createPlayer(name, token) {
@@ -48,15 +57,27 @@ const liz = createPlayer("Liz", "0");
 
 const result = (function createGame(board, player1, player2) {
   const players = [player1, player2];
-  let turnCount = 0;
   let currentPlayer = player1;
+  let turnCount = 0;
+  const maxTurnCount = 9;
 
-  while (turnCount < 9) {
-    console.log(`Player: ${currentPlayer.getName()}`)
-    const [x, y] = prompt("enter position XY (00, 01, 02, 10 ... 22)");
-    board.placeToken(currentPlayer.getToken(), [x, y]);
-    console.table(board.getBoard());
-    if ( board.winner(currentPlayer.getToken()) ) { return `${currentPlayer.getName()} is the winner!`; break };
+  const getUserInput = () => {
+    let x, y, positionAvailable;
+
+    while (!positionAvailable) {
+      [x, y] = prompt(`${currentPlayer.getName()}: Enter position XY`);
+      positionAvailable = board.positionAvailable([x, y])
+      console.log(`positionAvailable: ${positionAvailable}`)
+    }
+    return [x, y]
+  }
+
+  while (turnCount < maxTurnCount) {
+    board.placeToken(currentPlayer.getToken(), getUserInput());
+    console.log(board.getBoard().toString())
+    if (board.winner(currentPlayer.getToken())) {
+      return`${currentPlayer.getName()} is the winner!`;
+    };
     turnCount++;
     currentPlayer = players[turnCount % 2];
   }
