@@ -1,0 +1,55 @@
+:root {
+  /* color palette */
+  --text-primary: #060b04;
+  --text-secondary: #575655;
+  --text-light: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-secondary: #4798c5;
+  --bg-dark-transparent: #00000030;
+  --img-bg-1: #9f1c1d;
+  --img-bg-2: #7c75cb;
+  --img-bg-3: #568246;
+  --img-bg-4: #c363b4;
+  --img-bg-5: #d89038;
+  --img-bg-6: #0692b3;
+}
+
+* {
+  padding: 0;
+  font-family: "Roboto", serif;
+}
+
+img {
+  height: auto;
+  vertical-align: middle;
+  font-style: italic;
+  background-repeat: no-repeat;
+  background-size: cover;
+  shape-margin: 1rem;
+
+  &.placeholder {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  }
+}
+
+h1 { font-size: clamp(3rem,   1rem + 3vw,   5rem); }
+h2 { font-size: clamp(2rem,   1rem + 2vw,   4rem); }
+h3 { font-size: clamp(1.5rem, 1rem + 1vw,   3rem); }
+h4 { font-size: clamp(1rem,   1rem + 0.5vw, 2rem); }
+p  { font-size: clamp(1rem,   1rem + 0.5vw, 1.5rem); }
+
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+  font-weight: 200;
+  font-family: "Playfair Display", serif;
+}
+
+p {
+  color: var(--text-secondary);
+  font-family: "Roboto", serif;
+}
+
+.container {
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 8rem) clamp(1rem, 10vw, 10rem);
+}
