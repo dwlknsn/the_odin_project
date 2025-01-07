@@ -42,7 +42,7 @@ class Board
         y = current_node.y + move[1]
 
         next unless valid_move?([x, y])
-        next if visited?(current_path, [x, y])
+        next if visited?([x, y])
 
         if @finish == [x, y]
           current_path.append(Node.new(x, y))
@@ -76,10 +76,9 @@ class Board
     position.all? { |x| x.between?(0, @size - 1) }
   end
 
-  def visited?(path, position)
-    # path.contains?(position)
-    @start == position ||
-      @board[position[0]][position[1]] == "."
+  def visited?(position)
+    x, y = position
+    @start == position || @board[x][y] == "."
   end
 
   def mark_as_visited(position)
