@@ -1,88 +1,128 @@
-const myBoard = (function createGameboard() {
+function createGameboard() {
   const rows = 3;
   const cols = 3;
   const board = [];
 
-  for (let i = 0; i < rows; i++) {
-    board.push([])
+  const buildBoard = (() => {
+    for (let i = 0; i < rows; i++) {
+      board.push([])
 
-    for (let j = 0; j < cols; j++) {
-      board[i].push(null);
+      for (let j = 0; j < cols; j++) {
+        board[i].push(null);
+      }
     }
-  }
-
-  const winningCombos = [
-    // winning rows:
-    [[0, 0], [1, 0], [2, 0]],
-    [[0, 1], [1, 1], [2, 1]],
-    [[0, 2], [1, 2], [2, 2]],
-    // winning cols:
-    [[0, 0], [0, 1], [0, 2]],
-    [[1, 0], [1, 1], [1, 2]],
-    [[2, 0], [2, 1], [2, 2]],
-    // winning diagonals
-    [[0, 0], [1, 1], [2, 2]],
-    [[0, 2], [1, 1], [2, 0]]
-  ]
+  })();
 
   const getBoard = () => board;
-  const positionAvailable = ([x, y]) => {
-    const validRow = x >= 0 && x <= rows;
-    const validCol = y >= 0 && y <= cols;
 
-    if (validRow && validCol) {
-      return getBoard()[x][y] === null;
-    }
-    return false
+  const printBoard = () => { board.forEach(row => console.log(row)); }
+
+  const positionAvailable = (row, col) => {
+    const validRow = row >= 0 && row <= rows;
+    if (!validRow) return false;
+
+    const validCol = col >= 0 && col <= cols;
+    if (!validCol) return false;
+
+    return board[row][col] === null;
   }
-  const placeToken = (token, [x, y]) => { getBoard()[x][y] = token; }
-  const winner = (token) => {
+
+  const placeToken = (token, row, col) => {
+    if (positionAvailable(row, col)) {
+      console.log(`Placing token ${token} at position row ${row}, col ${col}`)
+      board[row][col] = token;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return { getBoard, printBoard, placeToken }
+};
+
+function gameController(player1, player2) {
+  const players = [player1, player2];
+  const board = createGameboard();
+  const maxTurnCount = 9;
+
+  let currentPlayer = players[0];
+  let currentTurnCount = 1;
+
+  const switchPlayer = () => { currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0]; }
+  // const getCurrentPlayer = () => currentPlayer;
+
+  const printNewRound = () => {
+    board.printBoard();
+    console.log(`Turn ${currentTurnCount} - ${currentPlayer.getName()}'s turn.`);
+  };
+
+  const gameWon = () => {
+    const winningCombos = [
+      // winning rows:
+      [[0, 0], [1, 0], [2, 0]],
+      [[0, 1], [1, 1], [2, 1]],
+      [[0, 2], [1, 2], [2, 2]],
+      // winning cols:
+      [[0, 0], [0, 1], [0, 2]],
+      [[1, 0], [1, 1], [1, 2]],
+      [[2, 0], [2, 1], [2, 2]],
+      // winning diagonals
+      [[0, 0], [1, 1], [2, 2]],
+      [[0, 2], [1, 1], [2, 0]]
+    ]
+
     return winningCombos.some((arr) => {
-      return arr.map(([x, y]) => { return getBoard()[x][y] == token; })
-                .every(bool => bool);
+      return arr.map(([row, col]) => {
+        return board.getBoard()[row][col] == currentPlayer.getToken();
+      }).every(bool => bool);
     })
   }
 
-  return { getBoard, positionAvailable, placeToken, winner }
-})();
+  const noMovesAvailable = () => {
+    console.log(currentTurnCount)
+    return currentTurnCount == maxTurnCount;
+  }
+
+  const playRound = (row, col) => {
+    if (board.placeToken(currentPlayer.getToken(), row, col)) {
+      if (gameWon()) {
+        console.log(`GAME OVER - ${currentPlayer.getName()} is the winner`);
+        console.log("Final Board State:");
+        board.printBoard();
+      } else if (noMovesAvailable()) {
+        console.log(`GAME OVER - No more moves available`);
+        console.log("Final Board State:");
+        board.printBoard();
+      } else {
+        currentTurnCount++
+        switchPlayer();
+        printNewRound();
+      }
+    } else {
+      console.log(`FAIL - Invalid position ${[row, col]}`)
+    }
+  }
+
+  printNewRound();
+  return { playRound }
+}
 
 function createPlayer(name, token) {
   const getName = () => name;
   const getToken = () => token;
+
   return { getName, getToken }
 }
 
 const bob = createPlayer("Bob", "X");
 const liz = createPlayer("Liz", "0");
-
-const result = (function createGame(board, player1, player2) {
-  const players = [player1, player2];
-  let currentPlayer = player1;
-  let turnCount = 0;
-  const maxTurnCount = 9;
-
-  const getUserInput = () => {
-    let x, y, positionAvailable;
-
-    while (!positionAvailable) {
-      [x, y] = prompt(`${currentPlayer.getName()}: Enter position XY`);
-      positionAvailable = board.positionAvailable([x, y])
-      console.log(`positionAvailable: ${positionAvailable}`)
-    }
-    return [x, y]
-  }
-
-  while (turnCount < maxTurnCount) {
-    board.placeToken(currentPlayer.getToken(), getUserInput());
-    console.log(board.getBoard().toString())
-    if (board.winner(currentPlayer.getToken())) {
-      return`${currentPlayer.getName()} is the winner!`;
-    };
-    turnCount++;
-    currentPlayer = players[turnCount % 2];
-  }
-
-  return "The game is a draw."
-})(myBoard, bob, liz);
-
-console.log(result)
+const game = gameController(bob, liz);
+game.playRound(0, 0);
+game.playRound(1, 1);
+game.playRound(2, 2);
+game.playRound(0, 2);
+game.playRound(1, 2);
+game.playRound(1, 0);
+game.playRound(0, 1);
+game.playRound(2, 1);
+game.playRound(2, 0);
