@@ -48,8 +48,9 @@ function gameController(player1, player2) {
   let currentPlayer = players[0];
   let currentTurnCount = 1;
 
-  const switchPlayer = () => { currentPlayer = (currentPlayer == players[0]) ? players[1] : players[0]; }
-  // const getCurrentPlayer = () => currentPlayer;
+  const getCurrentPlayer = () => currentPlayer;
+  const getNextPlayer    = () => (currentPlayer == players[0]) ? players[1] : players[0];
+  const switchPlayer     = () => currentPlayer = getNextPlayer()
 
   const printNewRound = () => {
     board.printBoard();
@@ -84,27 +85,45 @@ function gameController(player1, player2) {
   }
 
   const playRound = (row, col) => {
+    let valid;
+    let gameOver;
+    let msg;
+
     if (board.placeToken(currentPlayer.getToken(), row, col)) {
       if (gameWon()) {
-        console.log(`GAME OVER - ${currentPlayer.getName()} is the winner`);
-        console.log("Final Board State:");
+        valid = true;
+        gameOver = true;
+        msg = `GAME OVER - ${currentPlayer.getName()} is the winner`;
+
+        console.log(msg);
         board.printBoard();
       } else if (noMovesAvailable()) {
-        console.log(`GAME OVER - No more moves available`);
-        console.log("Final Board State:");
+        valid = true;
+        gameOver = true;
+        msg = `GAME OVER - No more moves available`;
+
+        console.log(msg);
         board.printBoard();
       } else {
+        valid = true;
+        gameOver = false;
+        msg = `Continue`;
+
         currentTurnCount++
         switchPlayer();
         printNewRound();
       }
     } else {
-      console.log(`FAIL - Invalid position ${[row, col]}`)
+      gameOver = false;
+      msg = `FAIL - Invalid position ${[row, col]}`;
     }
+    return { valid, gameOver, msg };
   }
 
+  const getBoard = () => board.getBoard();
+
   printNewRound();
-  return { playRound }
+  return { playRound, getBoard, getCurrentPlayer, getNextPlayer }
 }
 
 function createPlayer(name, token) {
@@ -114,15 +133,93 @@ function createPlayer(name, token) {
   return { getName, getToken }
 }
 
-const bob = createPlayer("Bob", "X");
-const liz = createPlayer("Liz", "0");
-const game = gameController(bob, liz);
-game.playRound(0, 0);
-game.playRound(1, 1);
-game.playRound(2, 2);
-game.playRound(0, 2);
-game.playRound(1, 2);
-game.playRound(1, 0);
-game.playRound(0, 1);
-game.playRound(2, 1);
-game.playRound(2, 0);
+function UIController() {
+  const gameboardContainerDiv = document.querySelector("#gameboard-container");
+  const resultDiv = document.querySelector("#result")
+  const cellTemplate = document.querySelector("#cell-template");
+  const player1 = createPlayer("Bob", "X");
+  const player2 = createPlayer("Liz", "O");
+
+  const resetDisplay = (game) => {
+    gameboardContainerDiv.innerHTML = null;
+    resultDiv.innerHTML = null;
+    const currentPlayerDiv = document.querySelector("#current-player");
+
+    const updateCurrentPlayerDiv = (playerName) => {
+      currentPlayerDiv.textContent = `Current Player: ${playerName}`;
+    }
+
+
+    updateCurrentPlayerDiv(game.getCurrentPlayer().getName());
+
+    game.getBoard().forEach((row, rowIndex) => {
+      row.forEach((_col, colIndex) => {
+        const newCell = cellTemplate.content.cloneNode(true);
+        const dataId = `${rowIndex}-${colIndex}`;
+        const selectorId = `cell-${dataId}`;
+
+        newCell.querySelector(".cell").id = selectorId;
+        gameboardContainerDiv.appendChild(newCell);
+
+        gameboardContainerDiv.querySelector(`#${selectorId}`).dataset.cellId = dataId;
+      })
+    });
+
+    const cells = gameboardContainerDiv.querySelectorAll(".cell")
+
+    const playRound = (event) => {
+      const [row, col] = event.target.dataset.cellId.split("-");
+      const cell = event.target;
+      const currentPlayer = game.getCurrentPlayer();
+      const nextPlayer = game.getNextPlayer();
+      const result = game.playRound(row, col);
+
+      if ( result.valid ) {
+        cell.classList.add(`token-${currentPlayer.getToken()}`);
+
+        if ( result.gameOver ) {
+          removeEventListeners();
+          resultDiv.textContent = result.msg;
+        } else {
+          updateCurrentPlayerDiv(nextPlayer.getName());
+        }
+      } else {
+        // do nothing
+      }
+    }
+
+    cells.forEach(cell => {
+      cell.addEventListener("click", playRound);
+    })
+
+    const removeEventListeners = () => {
+      cells.forEach(cell => {
+        cell.removeEventListener("click", playRound);
+      });
+    }
+  }
+
+  const addEventListeners = (game) => {
+  }
+
+  const startGame = () => {
+    const game = gameController(player1, player2);
+    resetDisplay(game);
+    // setupEventListeners();
+  }
+
+
+  return { startGame }
+}
+
+// game.playRound(0, 0);
+// game.playRound(1, 1);
+// game.playRound(2, 2);
+// game.playRound(0, 2);
+// game.playRound(1, 2);
+// game.playRound(1, 0);
+// game.playRound(0, 1);
+// game.playRound(2, 1);
+// game.playRound(2, 0);
+
+UIController().startGame();

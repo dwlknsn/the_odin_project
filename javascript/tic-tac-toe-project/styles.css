@@ -1,3 +1,38 @@
 body {
   background-color: #666;
 }
+
+#gameboard-container {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  justify-content: center;
+}
+.cell {
+  background-color: #999;
+  height: 100px;
+  width: 100px;
+  border: 1px solid black;
+  align-content: center;
+  text-align: center;
+
+  &.token-X {
+    background-color: lightcoral;
+  }
+  &.token-O {
+    background-color: lightblue;
+  }
+}
+
+#current-player {
+  max-width: 100%;
+  text-align: center;
+  padding: 2rem;
+  font-size: 2rem;
+}
+
+#result {
+  max-width: 100%;
+  text-align: center;
+  padding: 2rem;
+  font-size: 2rem;
+}
