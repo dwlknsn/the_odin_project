@@ -30,14 +30,7 @@ body {
   }
 }
 
-#current-player {
-  max-width: 100%;
-  text-align: center;
-  padding: 2rem;
-  font-size: 2rem;
-}
-
-#result {
+#new-game-btn, #current-player, #result {
   max-width: 100%;
   text-align: center;
   padding: 2rem;

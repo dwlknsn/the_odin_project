@@ -201,18 +201,16 @@ function UIController(game) {
   return { startGame }
 }
 
-
-// game.playRound(0, 0);
-// game.playRound(1, 1);
-// game.playRound(2, 2);
-// game.playRound(0, 2);
-// game.playRound(1, 2);
-// game.playRound(1, 0);
-// game.playRound(0, 1);
-// game.playRound(2, 1);
-// game.playRound(2, 0);
-
 const player1 = createPlayer("Bob", "X");
 const player2 = createPlayer("Liz", "O");
 const game = gameController(player1, player2);
+
 UIController(game).startGame();
+
+const newGameBtn = document.querySelector("#new-game-btn");
+newGameBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  const game = gameController(player1, player2);
+  UIController(game).startGame();
+});
