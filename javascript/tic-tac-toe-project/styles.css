@@ -3,10 +3,17 @@ body {
 }
 
 #gameboard-container {
+  display: flex;
+  justify-content: center;
+}
+
+#gameboard {
   display: grid;
   grid-template-columns: repeat(3, 100px);
   justify-content: center;
+  border: 10px solid black;
 }
+
 .cell {
   background-color: #999;
   height: 100px;
